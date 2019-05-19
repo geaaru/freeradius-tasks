@@ -3,8 +3,11 @@ image:
   release: 7
 
 source:
-  downloader: oraclelinux-http
-  url: https://mirror.aarnet.edu.au/pub/oraclelinux
+  # It seems broken: Error: Failed to mount filesystems: mkdir /tmp/cachedir/rootfs/.distrobuilder/0: file exists.
+  # downloader: oraclelinux-http
+  # url: https://mirror.aarnet.edu.au/pub/oraclelinux
+  downloader: docker-http
+  url: oraclelinux
 
 targets:
   lxc:
