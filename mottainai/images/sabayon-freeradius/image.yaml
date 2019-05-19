@@ -66,7 +66,7 @@ packages:
 
   repositories:
     - name: "geaaru"
-      URL: "https://dispatcher.sabayon.org/sbi/namespace/geaaru/geaaru"
+      url: "https://dispatcher.sabayon.org/sbi/namespace/geaaru/geaaru"
       type: "enman"
 
      # Enable main repository
