@@ -61,13 +61,17 @@ packages:
   manager: equo
   update: true
   cleanup: true
-  install:
-    - =net-dialup/freeradius-3.0.19
 
   repositories:
     - name: "geaaru"
       url: "https://dispatcher.sabayon.org/sbi/namespace/geaaru/geaaru"
       type: "enman"
+
+  sets:
+    - packages:
+        - sys-apps/dbus
+        - =net-dialup/freeradius-3.0.19
+      action: install
 
      # Enable main repository
 #   - name: "sabayonlinux.org"
@@ -82,6 +86,8 @@ actions:
     action: |-
       #!/bin/bash
       equo up && equo i enman
+      touch /etc/entropy/packages/package.mask
+      equo mask net-dialup/freeradius@sabayonlinux.org
 
   - trigger: post-packages
     action: |-
@@ -140,6 +146,13 @@ actions:
       #!/bin/bash
       systemctl enable systemd-networkd
       systemctl enable systemd-resolved
+
+  # Disable systemd-journald-audit service
+  - trigger: post-packages
+    action: |-
+      #!/bin/bash
+      cd /etc/systemd/system
+      ln -s /dev/null systemd-journald-audit.socket
 
   # Workaround needed until I fix resolv.conf with distrobuider hook/generator
   - trigger: post-packages
