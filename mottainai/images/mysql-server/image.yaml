@@ -172,3 +172,19 @@ actions:
       #!/bin/bash
       cd /etc/systemd/system
       ln -s /dev/null systemd-sysctl.service
+
+  # Clean temporary directory
+  - trigger: post-packages
+    action: |-
+      #!/bin/bash
+      cd /tmp
+      rm -rif *
+
+  # Add mysql-community repository
+  - trigger: pre-packages
+    action: |-
+      #!/bin/bash
+      yum install -y curl
+      cd /tmp
+      curl -L -O https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+      rpm -i ./mysql80-community-release-el7-3.noarch.rpm
