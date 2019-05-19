@@ -181,7 +181,7 @@ actions:
       rm -rif *
 
   # Add mysql-community repository
-  - trigger: pre-packages
+  - trigger: post-unpack
     action: |-
       #!/bin/bash
       yum install -y curl
