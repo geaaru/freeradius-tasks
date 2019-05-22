@@ -1,0 +1,31 @@
+---
+
+builder_rootdir: ..
+lxd_target_server: local
+lxd_skip_pull: 1
+ephemeral_container: yes
+freeradius_nodes:
+  - radius1
+  - radius2
+freeradius_lxd_profiles:
+  - net-lxd
+  - sdpool
+mysql_lxd_profiles:
+  - sdpool
+  - net-lxd
+mysql_nodes:
+  - mysql1
+  - mysql2
+  - mysql3
+lxd_network_domain: geaaru.local
+freeradius_lxd_image: sabayon/freeradius
+mysql_server_lxd_image: freeadius/mysql-server
+
+staging_dir: /tmp/freeradius-tasks/
+
+# Mysql Cluster configuration
+mysql_root_pwd: "Qwe123!01"
+mysql_cluster_user: clusteradmin
+mysql_cluster_user_pwd: "FreeR@dius123"
+mysql_cluster_name: "freeradiusCluster"
+

@@ -1,0 +1,48 @@
+---
+
+# Author: Daniele Rondina, geaaru@gmail.com
+# Description: 
+
+- name: "Prepare MySQL Cluster nodes"
+  debug:
+    msg: "Nodes to build: {{ mysql_nodes }} with profiles {{ mysql_lxd_profiles }}"
+
+- name: Create a LXD MySQL Container
+  connection: local
+  lxd_container:
+    name: "{{ item }}"
+    state: started
+    source:
+      type: image
+      mode: pull
+      server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
+      protocol: simplestreams # if you get a 404, try setting protocol: simplestreams
+      alias: "{{ mysql_server_lxd_image }}"
+    ephemeral: True
+    profiles: "{{ mysql_lxd_profiles | list }}"
+    #profiles: "{{ freeradius_lxd_profiles }}"
+    wait_for_ipv4_addresses: true
+    timeout: 600
+  with_items:
+    - "{{ mysql_nodes }}"
+  tags:
+    - create_mysql_container
+
+- name: Configure MySQL Cluster
+  include_role:
+    name: mysql
+    tasks_from: configure
+  loop_control:
+    loop_var: container
+  with_items:
+    - "{{ mysql_nodes }}"
+
+- name: Create Cluster from first node
+  include_role:
+    name: mysql
+    tasks_from: create_cluster
+  vars:
+    container: "{{ mysql_nodes[0] }}"
+  tags:
+    - create_mysql_cluster
+

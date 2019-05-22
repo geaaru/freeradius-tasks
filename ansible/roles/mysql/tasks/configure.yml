@@ -1,0 +1,75 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Configure mysqld daemon at first bootstrap
+
+
+# Command to execute in every command
+- name: "{{ container }}: Check address of the container"
+  command: "lxc exec {{ container }} ip a"
+  register: container_ip_a
+
+- name: "{{ container }}: Configure node"
+  debug:
+    msg: "Begin configuration of the node {{ container }} with address:\n{{ container_ip_a.stdout }}"
+
+
+- name: "{{ container }}: Retrieve temporary MySQLd password"
+  shell: lxc exec {{ container }} cat /var/log/mysqld.log | grep temporary | awk '{ print $NF }'
+  register: container_mysql_pwd_tmp
+
+- name: "{{ container }}: Mysql Temporary Password"
+  debug:
+    msg: "Container {{ container }} has temporary password: {{ container_mysql_pwd_tmp.stdout }}"
+
+# Here MySQL it's very stupid. If you try to ping and resolve mysqlX.domain drop domain
+# and use localhost name.
+- name: "{{ container }}: Fix /etc/hosts - Mysql doen't work well here"
+  shell: lxc exec {{ container }} -- sed -i -e 1d /etc/hosts
+
+- name: "{{ container }}: Cat /etc/hosts"
+  shell: lxc exec {{ container }} cat /etc/hosts
+  register: container_cat_etc_hosts
+
+- name: "{{ container }}: Show /etc/hosts"
+  debug:
+    msg: "{{ container }}: /etc/hosts\n{{ container_cat_etc_hosts.stdout }}"
+
+- name: "{{ container }}: Create staging directory if doesn't exist"
+  file:
+    path: "{{ staging_dir }}/{{ container }}"
+    state: directory
+    mode: '0755'
+
+- name: "{{ container }}: Prepare initialize-mysql.sql script"
+  template:
+    src: initialize-mysql.sql
+    dest: "{{ staging_dir }}/{{ container }}/initialize-mysql.sql"
+
+- name: "{{ container }}: Push file initialize-mysql.sql"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/initialize-mysql.sql {{ container }}/tmp/initialize-mysql.sql
+
+- name: "{{ container }}: Check temporary directory"
+  shell: lxc exec {{ container }} -- ls -l /tmp
+  register: ls_tmp
+
+- name: "{{ container }}: Ls /tmp"
+  debug:
+    msg: "{{ container }}: ls -l /tmp:\n{{ ls_tmp.stdout }}"
+
+# https://dev.mysql.com/doc/dev/mysqlsh-api-javascript/8.0/classmysqlsh_1_1dba_1_1_cluster.html#a92471821375405214215958ee924087f
+- name: "{{ container }}: Set root password and create cluster user admin"
+  shell: lxc exec {{ container }} -- mysqlsh root@localhost --password={{ container_mysql_pwd_tmp.stdout | quote }} --sql -f /tmp/initialize-mysql.sql
+  register: initialize_mysql
+
+- name: "{{ container }}: Result of initialize-mysql.sql script"
+  debug:
+    msg: "{{ container }}: mysqlsh:\n{{ initialize_mysql.stdout }}"
+
+- name: "{{ container }}: Remove file /tmp/initialize-mysql.sql"
+  shell: lxc exec {{ container }} -- rm -vf /tmp/initialize-mysql.sql
+  tags:
+    - rm_temp_scripts
+
+- name: "{{ container }}: Restart mysqld service"
+  shell: lxc exec {{ container }} -- systemctl restart mysqld

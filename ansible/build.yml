@@ -1,0 +1,20 @@
+---
+
+- hosts:
+    - all
+  # Execute playbook this this env for have more user friendly output.
+  #  ANSIBLE_STDOUT_CALLBACK=debug
+
+  tasks:
+
+    - name: Build Freeradius Environment
+      block:
+
+        # Create MySQL Cluster
+        - name: Build
+          include_role:
+            name: lxd
+            tasks_from: image_builder_mysql
+          tags:
+            - build_mysql_nodes
+

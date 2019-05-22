@@ -1,0 +1,54 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Configure mysqld daemon at first bootstrap
+
+
+- name: "{{ container }}: Prepare create configure-instances.js script"
+  template:
+    src: configure-instances.js
+    dest: "{{ staging_dir }}/{{ container }}/configure-instances.js"
+
+- name: "{{ container }}: Push file configure-instances.js"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/configure-instances.js {{ container }}/tmp/configure-instances.js
+
+- name: "{{ container }}: Prepare create create-cluster.js script"
+  template:
+    src: create-cluster.js
+    dest: "{{ staging_dir }}/{{ container }}/create-cluster.js"
+
+- name: "{{ container }}: Push file create-cluster.js"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/create-cluster.js {{ container }}/tmp/create-cluster.js
+
+- name: "{{ container }}: Configure Instances (configure-instances.js)"
+  shell: lxc exec {{ container }} -- mysqlsh root@localhost --password={{ mysql_root_pwd | quote }} --js -f /tmp/configure-instances.js
+  register: configure_instances
+
+- name: "{{ container }}: Result of configure-instances.js script"
+  debug:
+    msg: "{{ container }}: mysqlsh:\n{{ configure_instances.stdout }}"
+
+- name: "{{ container }}: Remove file /tmp/configure-instancesr.js"
+  shell: lxc exec {{ container }} -- rm -vf /tmp/configure-instances.js
+  tags:
+    - rm_temp_scripts
+
+- name: Restart MySQLd Service
+  shell: lxc exec {{ mysql_container }} -- systemctl restart mysqld
+  loop_control:
+    loop_var: mysql_container
+  with_items:
+    - "{{ mysql_nodes }}"
+
+- name: "{{ container }}: Create cluster (create-cluster.js)"
+  shell: lxc exec {{ container }} -- mysqlsh {{ mysql_cluster_user }}@{{ container }}.{{ lxd_network_domain }} --password={{ mysql_cluster_user_pwd | quote }} --js -f /tmp/create-cluster.js
+  register: create_cluster_js
+
+- name: "{{ container }}: Result of create-cluster.js script"
+  debug:
+    msg: "{{ container }}: mysqlsh:\n{{ create_cluster_js.stdout }}"
+
+- name: "{{ container }}: Remove file /tmp/create-cluster.js"
+  shell: lxc exec {{ container }} -- rm -vf /tmp/create-cluster.js
+  tags:
+    - rm_temp_scripts

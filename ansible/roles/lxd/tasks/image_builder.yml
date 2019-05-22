@@ -1,0 +1,40 @@
+---
+
+# Author: Daniele Rondina, geaaru@gmail.com
+# Description: 
+
+- name: "Prepare"
+  debug:
+    msg: "Freeradius nodes {{ freeradius_nodes }}"
+
+- name: Create a LXD FreeRadius Container
+  connection: local
+  lxd_container:
+    name: "{{ item }}"
+    state: started
+    source:
+      type: image
+      mode: pull
+      server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
+      protocol: simplestreams # if you get a 404, try setting protocol: simplestreams
+      alias: sabayon/freeradius
+    ephemeral: True
+    profiles: [ "net-lxd", "sdpool" ]
+    #profiles: "{{ freeradius_lxd_profiles }}"
+    wait_for_ipv4_addresses: true
+    timeout: 600
+  with_items:
+    - "{{ freeradius_nodes }}"
+
+- name: Execute command
+  command: "lxc exec {{ item }} ip a"
+  with_items:
+    - "{{ freeradius_nodes }}"
+
+- name: Delete LXD FreeRadius Container
+  connection: local
+  lxd_container:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - "{{ freeradius_nodes }}"
