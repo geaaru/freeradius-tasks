@@ -45,7 +45,7 @@ products:
     # This option is used by build-images-file
     prefix_path: "https://mottainai/sbi/namespaces/lxd-mysql-server"
     # Add hook for separate image creation and clean .distrobuilder directory (issue on distrobuilder).
-    build_script_hook: "/oracle-image-fix.sh"
+    #build_script_hook: "/oracle-image-fix.sh"
     # prefix_path: "https://dispatcher.sabayon.org/sbi/namespace/lxd-mysql-server"
     days: 1
     aliases:
