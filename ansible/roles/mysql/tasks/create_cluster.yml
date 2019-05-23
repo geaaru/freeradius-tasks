@@ -28,7 +28,7 @@
   debug:
     msg: "{{ container }}: mysqlsh:\n{{ configure_instances.stdout }}"
 
-- name: "{{ container }}: Remove file /tmp/configure-instancesr.js"
+- name: "{{ container }}: Remove file /tmp/configure-instances.js"
   shell: lxc exec {{ container }} -- rm -vf /tmp/configure-instances.js
   tags:
     - rm_temp_scripts

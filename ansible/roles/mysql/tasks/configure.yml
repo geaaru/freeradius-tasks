@@ -71,5 +71,8 @@
   tags:
     - rm_temp_scripts
 
+- name: "{{ container }}: Enable compatibility with old Mysql Client"
+  shell: lxc exec {{ container }} -- sed -i -e 's:# default-authentication-plugi.*:default-authentication-plugin = mysql_native_password:g' /etc/my.cnf
+
 - name: "{{ container }}: Restart mysqld service"
   shell: lxc exec {{ container }} -- systemctl restart mysqld

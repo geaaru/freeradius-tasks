@@ -1,0 +1,35 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Configure mysqld daemon at first bootstrap
+
+
+# Command to execute in every command
+- name: "{{ container }}: Check address of the container"
+  shell: lxc exec {{ container }} -- ip a
+  register: container_ip_a
+
+- name: "{{ container }}: Configure node"
+  debug:
+    msg: "Begin configuration of the node {{ container }} with address:\n{{ container_ip_a.stdout }}"
+
+- name: "{{ container }}: Stop mysqld from router"
+  shell: lxc exec {{ container }} -- systemctl stop mysqld
+
+- name: "{{ container }}: Disable mysqld from router"
+  shell: lxc exec {{ container }} -- systemctl disable mysqld
+
+- name: "{{ container }}: Create password file"
+  shell: lxc exec {{ container }} -- echo {{ mysql_cluster_user_pwd | quote }} > /tmp/credential
+
+- name: "{{ container }}: Create mysqlrouter.conf"
+  shell: lxc exec {{ container }} -- mysqlrouter --user=mysqlrouter --bootstrap {{ mysql_cluster_user }}@{{ mysql_nodes | first }}.{{ lxd_network_domain }} --force < /tmp/credential
+
+- name: "{{ container }}: Remove password file"
+  shell: lxc exec {{ container }} -- rm -vf /tmp/credential
+  tags:
+    - rm_temp_scripts
+
+- name: "{{ container }}: Start mysqlrouter service"
+  shell: lxc exec {{ container }} -- systemctl start mysqlrouter
+

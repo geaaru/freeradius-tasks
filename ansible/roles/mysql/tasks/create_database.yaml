@@ -1,0 +1,25 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Configure mysqld daemon at first bootstrap
+
+- name: "{{ container }}: Prepare create create-db.sql script"
+  template:
+    src: create-db.sql
+    dest: "{{ staging_dir }}/{{ container }}/create-db.sql"
+
+- name: "{{ container }}: Push file create-db.js"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/create-db.sql {{ container }}/tmp/create-db.sql
+
+- name: "{{ container }}: Create database (create-db.sql)"
+  shell: lxc exec {{ container }} -- mysqlsh root@localhost --password={{ mysql_root_pwd | quote }} --sql -f /tmp/create-db.sql
+  register: create_db_schema
+
+- name: "{{ container }}: Result of create-db.sql script"
+  debug:
+    msg: "{{ container }}: mysqlsh:\n{{ create_db_schema.stdout }}"
+
+- name: "{{ container }}: Remove file /tmp/create-db.sql"
+  shell: lxc exec {{ container }} -- rm -vf /tmp/create-db.sql
+  tags:
+    - rm_temp_scripts

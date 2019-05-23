@@ -17,6 +17,8 @@ mysql_nodes:
   - mysql1
   - mysql2
   - mysql3
+mysql_router_notes:
+  - mrouter1
 lxd_network_domain: geaaru.local
 freeradius_lxd_image: sabayon/freeradius
 mysql_server_lxd_image: freeadius/mysql-server
@@ -28,4 +30,13 @@ mysql_root_pwd: "Qwe123!01"
 mysql_cluster_user: clusteradmin
 mysql_cluster_user_pwd: "FreeR@dius123"
 mysql_cluster_name: "freeradiusCluster"
+# https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-working-with-cluster.html#mysql-innodb-cluster-securing
+mysql_cluster_ssl_mode: "REQUIRED"
+
+# Freeradius database configuration
+mysql_freeradius_database: "freeradius"
+mysql_freeradius_user: "freeradius"
+mysql_freeradius_pwd: "freeRadius01!"
+mysql_use_native_password: True
+
 
