@@ -71,6 +71,8 @@ packages:
     - packages:
         - sys-apps/dbus
         - =net-dialup/freeradius-3.0.19
+        - sys-auth/pam_radius
+        - net-wireless/wpa_supplicant
       action: install
 
      # Enable main repository
