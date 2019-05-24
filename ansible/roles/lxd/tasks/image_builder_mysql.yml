@@ -12,6 +12,8 @@
   lxd_container:
     name: "{{ item }}"
     state: started
+    cert_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.crt"
+    key_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.key"
     source:
       type: image
       mode: pull
@@ -87,3 +89,9 @@
   tags:
     - configure_mysql_router
 
+- name: Initialize Database
+  include_role:
+    name: mysql
+    tasks_from: initialize_freeradius_db
+  tags:
+    - initialize_freeradius_db

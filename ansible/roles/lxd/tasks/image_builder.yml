@@ -3,38 +3,43 @@
 # Author: Daniele Rondina, geaaru@gmail.com
 # Description: 
 
-- name: "Prepare"
+- name: "Prepare FreeRadius nodes"
   debug:
-    msg: "Freeradius nodes {{ freeradius_nodes }}"
+    msg: "Freeradius nodes {{ freeradius_nodes }} with profiles {{ freeradius_lxd_profiles }}"
 
-- name: Create a LXD FreeRadius Container
-  connection: local
+- name: "Create a LXD FreeRadius Container"
+  connection: "{{ lxd_target_server }}"
   lxd_container:
     name: "{{ item }}"
     state: started
+    cert_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.crt"
+    key_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.key"
     source:
       type: image
       mode: pull
       server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
-      protocol: simplestreams # if you get a 404, try setting protocol: simplestreams
-      alias: sabayon/freeradius
+      protocol: simplestreams
+      alias: "{{ freeradius_lxd_image }}"
     ephemeral: True
-    profiles: [ "net-lxd", "sdpool" ]
-    #profiles: "{{ freeradius_lxd_profiles }}"
+    profiles: "{{ freeradius_lxd_profiles | list }}"
     wait_for_ipv4_addresses: true
     timeout: 600
   with_items:
     - "{{ freeradius_nodes }}"
+  tags:
+    - create_freeradius_container
 
 - name: Execute command
-  command: "lxc exec {{ item }} ip a"
+  shell: lxc exec {{ freeradius_container }} -- ip a
+  loop_control:
+    loop_var: freeradius_container
   with_items:
     - "{{ freeradius_nodes }}"
 
-- name: Delete LXD FreeRadius Container
-  connection: local
-  lxd_container:
-    name: "{{ item }}"
-    state: stopped
-  with_items:
-    - "{{ freeradius_nodes }}"
+      #- name: Delete LXD FreeRadius Container
+      # connection: local
+      #  lxd_container:
+      # name: "{{ item }}"
+      #state: stopped
+      #with_items:
+      #- "{{ freeradius_nodes }}"
