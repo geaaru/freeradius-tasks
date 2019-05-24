@@ -1,0 +1,29 @@
+
+---
+
+- hosts:
+    - all
+  # Execute playbook this this env for have more user friendly output.
+  #  ANSIBLE_STDOUT_CALLBACK=debug
+
+  tasks:
+
+    - name: Stop FreeRadius Nodes
+      shell: lxc stop {{ lxd_target_server }}:{{ freeradius_container }}
+      loop_control:
+        loop_var: freeradius_container
+      with_items:
+        - "{{ freeradius_nodes }}"
+      tags:
+        - freeradius-nodes
+
+    - name: Stop Mysql Router/Server Nodes
+      shell: lxc stop {{ lxd_target_server }}:{{ container }}
+      loop_control:
+        loop_var: container
+      with_items:
+        - "{{ mysql_router_notes }}"
+        - "{{ mysql_nodes }}"
+      tags:
+        - mysql-nodes
+

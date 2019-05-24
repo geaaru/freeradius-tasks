@@ -4,6 +4,10 @@
     - all
   # Execute playbook this this env for have more user friendly output.
   #  ANSIBLE_STDOUT_CALLBACK=debug
+  #  LXD_INSECURE_TLS=1
+  environment:
+    - PATH: "{{ ansible_env.PATH }}:{{ dbrm_path }}"
+    - OVERRIDE_LOCAL_CONFIG_FILE: "{{ dbrm_config_dir }}/dbrm.conf"
 
   tasks:
 
@@ -18,3 +22,17 @@
           tags:
             - build_mysql_nodes
 
+        # Create FreeRadius Cluster
+        - name: Build
+          include_role:
+            name: lxd
+            tasks_from: image_builder
+          tags:
+            - build_freeradius_nodes
+
+        - name: Initialize Database
+          include_role:
+            name: mysql
+            tasks_from: initialize_freeradius_db
+          tags:
+            - initialize_freeradius_db

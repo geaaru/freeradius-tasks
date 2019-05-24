@@ -1,0 +1,34 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Configure mysqld daemon at first bootstrap
+
+- name: "Freeradius: Test Database connection"
+  shell: dbrm mariadb test_connection
+  args:
+    chdir: "{{ dbrm_config_dir }}"
+  register: dbrm_test_conn
+
+- name: "Freeradius: Result test connection"
+  debug:
+    msg: "dbrm mariadb test_connection:\n{{ dbrm_test_conn.stdout }}"
+
+- name: "Freeradius: Compile initial_ddl.sql"
+  shell: dbrm mariadb compile --file creation_scripts/initial_ddl.sql
+  args:
+    chdir: "{{ dbrm_config_dir }}"
+  register: dbrm_init_ddl
+
+- name: "Freeradius: Result compile initial_ddl.sql"
+  debug:
+    msg: "dbrm mariadb compile:\n{{ dbrm_init_ddl.stdout }}"
+
+- name: "Freeradius: Compile indexes, etc."
+  shell: dbrm mariadb compile --all
+  args:
+    chdir: "{{ dbrm_config_dir }}"
+  register: dbrm_compile
+
+- name: "Freeradius: Result compile"
+  debug:
+    msg: "dbrm mariadb compile:\n{{ dbrm_compile.stdout }}"
