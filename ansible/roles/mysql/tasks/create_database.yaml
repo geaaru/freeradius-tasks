@@ -23,3 +23,20 @@
   shell: lxc exec {{ container }} -- rm -vf /tmp/create-db.sql
   tags:
     - rm_temp_scripts
+
+# Initialize timezone
+- name: "{{ container }}: Create timezone tables script"
+  shell: lxc exec {{ container }} -- sh -c "mysql_tzinfo_to_sql /usr/share/zoneinfo/ > /tmp/timezone.sql"
+
+- name: "{{ container }}: Compile timezone script"
+  shell: lxc exec {{ container }} -- mysqlsh root@localhost --password={{ mysql_root_pwd | quote }} --sql --force --database=mysql -f /tmp/timezone.sql
+  register: init_tz_data
+
+- name: "{{ container }}: Result of timezone data initialization"
+  debug:
+    msg: "{{ container }}: mysqlsh:\n{{ init_tz_data.stdout }}"
+
+- name: "{{ container }}: Remove timezone script"
+  shell: lxc exec {{ container }} -- rm -vf /tmp/timezone.sql
+
+
