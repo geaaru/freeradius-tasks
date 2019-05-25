@@ -73,6 +73,7 @@ packages:
         - =net-dialup/freeradius-3.0.19
         - sys-auth/pam_radius
         - net-wireless/wpa_supplicant
+        - app-metrics/freeradius_exporter
       action: install
 
      # Enable main repository
