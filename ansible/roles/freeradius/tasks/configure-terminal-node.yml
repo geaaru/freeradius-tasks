@@ -24,6 +24,10 @@
     src: pam_radiusd_server
     dest: "{{ staging_dir }}/{{ container }}/server"
 
+# TODO: check if I can use a user not registerd
+- name: "{{ container }}: Create test user"
+  shell: lxc exec {{ container }} -- useradd -m -s /bin/bash -g users test
+
 - name: "{{ container }}: Push file system-auth"
   shell: lxc file push {{ staging_dir }}/{{ container }}/system-auth {{ container }}/etc/pam.d/system-auth
 

@@ -24,7 +24,7 @@ freeradius_secret: "mysecret"
 # Define node to use for test terminal ssh access
 pam_radiusd_nodes:
   - terminal-radius1
-pam_radiusd_opts: debug
+pam_radiusd_opts: debug try_first_pass
 pam_radiusd_timeout: 6
 
 # Define list of nodes of the MySQL Cluster and their name

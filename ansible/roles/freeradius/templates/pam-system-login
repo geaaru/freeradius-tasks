@@ -1,16 +1,16 @@
 #auth            sufficient        pam_radius_auth.so debug
-auth            required        pam_radius_auth.so {{ pam_radiusd_opts }}
+#auth            required        pam_radius_auth.so debug
 #auth		required	pam_tally2.so
-#auth		required	pam_tally2.so onerr=succeed
+auth		required	pam_tally2.so onerr=succeed
 auth		required	pam_shells.so 
 auth		required	pam_nologin.so 
 auth		include		system-auth
-#account         required        pam_radius_auth.so
 account		required	pam_access.so 
 account		required	pam_nologin.so 
 account		include		system-auth
-account		required	pam_tally2.so onerr=succeed 
+#account		required	pam_tally2.so onerr=succeed 
 password	include		system-auth
+session         sufficient      pam_radius_auth.so debug
 session         optional        pam_loginuid.so
 session		required	pam_env.so 
 session		optional	pam_lastlog.so silent 
