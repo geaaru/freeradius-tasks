@@ -15,6 +15,18 @@ freeradius_nodes:
   - radius1
   - radius2
 
+# Freeradius client of Radius Server
+freeradius_clients:
+  - terminal-radius1.geaaru.local
+# Freeradius client secret
+freeradius_secret: "mysecret"
+
+# Define node to use for test terminal ssh access
+pam_radiusd_nodes:
+  - terminal-radius1
+pam_radiusd_opts: debug
+pam_radiusd_timeout: 6
+
 # Define list of nodes of the MySQL Cluster and their name
 mysql_nodes:
   - mysql1
@@ -34,6 +46,8 @@ mysql_lxd_profiles:
 # Define the network domain configured on
 # LXD network used by the cluster.
 lxd_network_domain: geaaru.local
+# Define server where find needed images
+lxd_image_server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
 # Define name of the image used for FreeRadius Container
 freeradius_lxd_image: sabayon/freeradius
 # Define name of the image used for MySQL Server/Router Container
@@ -64,4 +78,4 @@ dbrm_config_dir: ../dbrm
 # dbrm_path: /usr/bin/dbrm
 dbrm_path: /home/geaaru/Projects/database-release-manager/root/bin
 
-# vim: set filetype=yaml
+# vim: filetype=yaml

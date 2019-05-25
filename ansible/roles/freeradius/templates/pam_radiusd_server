@@ -1,0 +1,3 @@
+{% for node in freeradius_nodes %}
+{{ node }}.{{ lxd_network_domain }}   {{ freeradius_secret }}    {{ pam_radiusd_timeout }}
+{% endfor %}

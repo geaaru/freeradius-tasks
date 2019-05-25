@@ -17,7 +17,7 @@
     source:
       type: image
       mode: pull
-      server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
+      server: "{{ lxd_image_server }}"
       protocol: simplestreams # if you get a 404, try setting protocol: simplestreams
       alias: "{{ mysql_server_lxd_image }}"
     ephemeral: True
@@ -66,7 +66,7 @@
     source:
       type: image
       mode: pull
-      server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
+      server: "{{ lxd_image_server }}"
       protocol: simplestreams
       alias: "{{ mysql_server_lxd_image }}"
     ephemeral: True
@@ -88,10 +88,3 @@
     loop_var: container
   tags:
     - configure_mysql_router
-
-- name: Initialize Database
-  include_role:
-    name: mysql
-    tasks_from: initialize_freeradius_db
-  tags:
-    - initialize_freeradius_db

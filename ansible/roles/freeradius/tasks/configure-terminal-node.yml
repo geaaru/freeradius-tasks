@@ -1,0 +1,41 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Configure terminal node and pam_radiusd service
+
+- name: "{{ container }}: Create staging directory if doesn't exist"
+  file:
+    path: "{{ staging_dir }}/{{ container }}"
+    state: directory
+    mode: '0755'
+
+- name: "{{ container }}: Prepare pam-system-auth"
+  template:
+    src: pam-system-auth
+    dest: "{{ staging_dir }}/{{ container }}/system-auth"
+
+- name: "{{ container }}: Prepare pam-system-login"
+  template:
+    src: pam-system-login
+    dest: "{{ staging_dir }}/{{ container }}/system-login"
+
+- name: "{{ container }}: Prepare server file"
+  template:
+    src: pam_radiusd_server
+    dest: "{{ staging_dir }}/{{ container }}/server"
+
+- name: "{{ container }}: Push file system-auth"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/system-auth {{ container }}/etc/pam.d/system-auth
+
+- name: "{{ container }}: Push file system-login"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/system-login {{ container }}/etc/pam.d/system-login
+
+- name: "{{ container }}: Push file /etc/raddb/server"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/server {{ container }}/etc/raddb/server
+
+- name: "{{ container }}: Enable SSHD Service"
+  shell: lxc exec {{ container }} -- systemctl enable sshd
+
+- name: "{{ container }}: Start SSHD Service"
+  shell: lxc exec {{ container }} -- systemctl start sshd
+

@@ -8,6 +8,7 @@
   environment:
     - PATH: "{{ ansible_env.PATH }}:{{ dbrm_path }}"
     - OVERRIDE_LOCAL_CONFIG_FILE: "{{ dbrm_config_dir }}/dbrm.conf"
+    - DBRM_VERBOSE: 1
 
   tasks:
 
@@ -30,9 +31,19 @@
           tags:
             - build_freeradius_nodes
 
+        # Initialize Freeradius Database
         - name: Initialize Database
           include_role:
             name: mysql
             tasks_from: initialize_freeradius_db
           tags:
             - initialize_freeradius_db
+
+        # Create terminator container module
+        - name: Create Terminal Container
+          include_role:
+            name: lxd
+            tasks_from: image_builder_terminal_node
+          tags:
+            - build_terminal_nodes
+
