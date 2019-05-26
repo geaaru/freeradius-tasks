@@ -33,7 +33,7 @@ old MySQL clients.
 
 ## Technologies
 
-For image preparation use [Mottainai](https://mottainaici.github.io/docs/) and details
+For image preparation is used [Mottainai](https://mottainaici.github.io/docs/) and details
 are available [here](https://github.com/geaaru/freeradius-tasks/tree/master/mottainai/images).
 
 For automation is used [Ansible](https://www.ansible.com/) and the detail are available
