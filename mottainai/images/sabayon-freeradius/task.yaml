@@ -38,7 +38,7 @@ environment:
   - "SSBUILDER_PREFIX=../lxd-sabayon-freeradius"
 namespace: lxd-sabayon-freeradius
 tag_namespace: lxd-sabayon-freeradius
-artefact_path: imagesa
+artefact_path: images
 privkey: "mygithubkey"
 source: git@github.com:geaaru/freeradius-tasks.git
 directory: /mottainai/images
