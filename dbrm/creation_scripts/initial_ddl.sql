@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `radacct` (
     nasipaddress         VARCHAR(15) NOT NULL DEFAULT '',
     nasportid            VARCHAR(15),
     nasporttype          VARCHAR(32),
+    nasidentifier        VARCHAR(100),
     acctstarttime        DATETIME(3),
     acctupdatetime       DATETIME(3),
     acctstoptime         DATETIME(3),
