@@ -5,8 +5,15 @@
 
 script:
   - source /etc/profile
-  # temporary: Sleep for LXD
-  - sleep 4
+  # Temporary fix
+  - eval "rm -fv /etc/resolv.conf || true"
+  - eval "ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf || true"
+  # temporary: Sleep for systemd-networkd bootstrap
+  - sleep 1
+  - find .
+  - systemctl start systemd-resolved
+  #- cat /etc/resolv.conf
+  - equo repo mirrorsort sabayonlinux.org
   - equo up
   - equo install enman
   - enman add https://dispatcher.sabayon.org/sbi/namespace/geaaru/geaaru
@@ -14,11 +21,14 @@ script:
   - touch /etc/entropy/packages/package.unmask
   - equo unmask dev-util/simplestreams-builder-9999
   - equo install distrobuilder dev-util/simplestreams-builder sys-fs/squashfs-tools
+  # Copy hook file in the right place
+  - cp mysql-server/oracle-image-fix.sh /
+  - chmod a+x /oracle-image-fix.sh
   - simplestreams-builder build-product -c tree-images.yaml -s . -t ./images freeradius-mysql-server:current:amd64:default --skip-lxc
   - simplestreams-builder build-versions-manifest -c tree-images.yaml -s ./images -t images -p freeradius-mysql-server:current:amd64:default
   - ls -ltr images/mysql-server/
   # Force creation of files with rw-rw-rw to permit that volumes in bind are readable
-  # by agent.
+  # by agent (needed for docker)
   - chmod a+rwx -R images/
   - find .
   - eval 'rm images/build_*.log || true'
@@ -33,7 +43,7 @@ environment:
 namespace: lxd-mysql-server
 tag_namespace: lxd-mysql-server
 artefact_path: images
-privkey: ""
+privkey: "mygithubkey"
 source: git@github.com:geaaru/freeradius-tasks.git
 directory: /mottainai/images
 timeout: 0
