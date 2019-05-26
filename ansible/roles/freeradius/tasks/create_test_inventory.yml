@@ -1,0 +1,11 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Create inventory with node to test
+
+# Create inventory for execute_test playbook
+- name: Create inventory for test
+  template:
+    src: inventory_test.j2
+    dest: "{{ staging_dir }}/inventory"
+

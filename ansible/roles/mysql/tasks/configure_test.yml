@@ -27,6 +27,6 @@
 
 - name: "{{ task_prefix }}: Result compile terminals_data.sql"
   debug:
-    msg: "dbrm mariadb compile:\n{{ dbrm_compile_terminal_nas }}"
+    msg: "dbrm mariadb compile:\n{{ dbrm_compile_terminals_data.stdout }}"
 
 

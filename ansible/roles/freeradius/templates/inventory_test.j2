@@ -1,0 +1,5 @@
+[terminals]
+{% for node in pam_radiusd_nodes %}
+{{ node }}        ansible_user=test   ansible_ssh_pass=qwerty  ansible_ssh_host={{ node }}.{{ lxd_network_domain }}
+{{ node }}_open   ansible_user=geaaru ansible_ssh_pass=xxxxx   ansible_ssh_host={{ node }}.{{ lxd_network_domain }}
+{% endfor %}

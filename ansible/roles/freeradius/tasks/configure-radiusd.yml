@@ -56,5 +56,7 @@
 - name: "{{ container }}: Reload systemd"
   shell: lxc exec {{ container }} -- systemctl daemon-reload
 
-#- name: "{{ container }}: Start Freeradius Service"
-#  shell: lxc exec {{ container }} -- systemctl start freeradius
+- name: "{{ container }}: Start Freeradius Service"
+  shell: lxc exec {{ container }} -- systemctl restart freeradius
+  when: freeradius_restart is defined
+

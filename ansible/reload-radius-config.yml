@@ -1,0 +1,22 @@
+---
+
+- hosts:
+    - all
+  # Execute playbook this this env for have more user friendly output.
+  #  ANSIBLE_STDOUT_CALLBACK=debug
+  #  LXD_INSECURE_TLS=1
+  environment:
+    - PATH: "{{ ansible_env.PATH }}:{{ dbrm_path }}"
+    - OVERRIDE_LOCAL_CONFIG_FILE: "{{ dbrm_config_dir }}/dbrm.conf"
+    - DBRM_VERBOSE: 1
+
+  tasks:
+
+    - name: Configure Freeradius Service
+      include_role:
+        name: freeradius
+        tasks_from: configure-radiusd
+      loop_control:
+        loop_var: container
+      with_items:
+        - "{{ freeradius_nodes }}"

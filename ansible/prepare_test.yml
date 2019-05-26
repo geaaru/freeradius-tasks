@@ -1,0 +1,31 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Playbook for initialize and execute test suites.
+
+
+- hosts:
+  - localhost
+
+  environment:
+    - PATH: "{{ ansible_env.PATH }}:{{ dbrm_path }}"
+    - OVERRIDE_LOCAL_CONFIG_FILE: "{{ dbrm_config_dir }}/dbrm.conf"
+    - DBRM_VERBOSE: 1
+
+  tasks:
+
+    # Initialize database with all needed data
+    - name: Create Test Data on Database
+      vars:
+        task_prefix: "prepare-test"
+      include_role:
+        name: mysql
+        tasks_from: configure_test
+      tags:
+        - prepare_db
+
+    # Create inventory for execute_test playbook
+    - name: Create inventory for test
+      include_role:
+        name: freeradius
+        tasks_from: create_test_inventory

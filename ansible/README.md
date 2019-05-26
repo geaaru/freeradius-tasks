@@ -132,7 +132,7 @@ $# # Run tests
 $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook execute_test.yml
 ```
 
-## Destroy/Stop Environment
+## Destroy Environment
 
 For destroy environment.
 
@@ -140,3 +140,15 @@ For destroy environment.
 $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook stop.yml
 ```
 
+## Reload Freeradius Configuration
+
+Resync configuration to every nodes:
+```bash
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook reload-radius-config.yml
+```
+
+Resync configuration to every nodes and restart Freeradius service:
+
+```bash
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook reload-radius-config.yml -e freeradius_restart=1
+```

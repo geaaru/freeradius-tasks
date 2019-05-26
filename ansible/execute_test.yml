@@ -1,0 +1,25 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Playbook for initialize and execute test suites.
+
+
+- hosts:
+  - all
+
+  tasks:
+
+    - name: Load configuration
+      include_vars: host_vars/localhost
+
+    - name: Execute test
+      block:
+
+        # Initialize database with all needed data
+        - name: "{{ ansible_ssh_host }}: Test SSH session"
+          shell: echo "ALL OK"
+          register: result_test
+
+        - name: "{{ ansible_ssh_host }}: Result test"
+          debug:
+            msg: "{{ ansible_ssh_host }}: test:\n{{ result_test.stdout }}"
