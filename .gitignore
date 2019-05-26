@@ -1,2 +1,4 @@
 *.swp
 *.log
+freeradius-config1/test1/sites/nas
+freeradius-config1/test1/mods-available/sql
