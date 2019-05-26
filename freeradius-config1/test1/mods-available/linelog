@@ -1,0 +1,68 @@
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+
+linelog log_accounting {
+
+  filename = ${logdir}/accounting.log
+  permissions = 0600
+
+  # The default format string.
+  format = "Unknown"
+
+  reference = "%{%{Packet-Type}:-format}.%{%{Acct-Status-Type}:-req}"
+  Accounting-Request {
+
+    Start = "%S - [%{Packet-Src-IP-Address} => %{Request:Packet-Dst-IP-Address}] Accounting-Request (Start): [%{escape:%{User-Name}}] (called %{Called-Station-Id} cli %{Calling-Station-Id} NAS-Identifier %{NAS-Identifier} ip %{Framed-IP-Address} id %{Acct-Session-Id})"
+    Stop = "%S - [%{Packet-Src-IP-Address} => %{Request:Packet-Dst-IP-Address}] Accounting-Request (Stop): [%{escape:%{User-Name}}] (called %{Called-Station-Id} cli %{Calling-Station-Id} NAS-Identifier %{NAS-Identifier} ip %{Framed-IP-Address} id %{Acct-Session-Id})"
+    Interim-Update = "%S - [%{Packet-Src-IP-Address} => %{Request:Packet-Dst-IP-Address}] Accounting-Request (Interim-Update): [%{escape:%{User-Name}}] (called %{Called-Station-Id} cli %{Calling-Station-Id} NAS-Identifier %{NAS-Identifier} ip %{Framed-IP-Address} id %{Acct-Session-Id})"
+
+    Accounting-On = "%S - [%{Packet-Src-IP-Address}] Received Accounting-On from NAS %{NAS-IP-Address}."
+    Accounting-Off = "%S - [%{Packet-Src-IP-Address}] Received Accounting-Off from NAS %{NAS-IP-Address}."
+
+  }
+
+}
+
+
+linelog log_auth {
+
+  filename = ${logdir}/access.log
+  permissions = 0600
+
+  # The default format string.
+  format = "Unknown"
+
+  reference = "messages.%{%{Packet-Type}:-format}"
+
+  messages {
+
+    Access-Request = "%S - [%{Packet-Src-IP-Address} => %{Request:Packet-Dst-IP-Address}] Access-Request: [%{escape:%{User-Name}}] (called %{Called-Station-Id} cli %{Calling-Station-Id} NAS-Identifier %{NAS-Identifier} id %{Acct-Session-Id})"
+
+    Unknown = ""
+
+  }
+
+}
+
+linelog log_auth_resp {
+
+  filename = ${logdir}/access.log
+  permissions = 0600
+
+  # The default format string.
+  format = "Unknown"
+
+  reference = "messages.%{%{Reply:Packet-Type}:-format}"
+
+  messages {
+
+    Access-Reject = "%S - [%{Reply:Packet-Src-IP-Address} => %{Packet-Src-IP-Address}] Access-Reject: [%{escape:%{User-Name}}] (called %{Called-Station-Id} cli %{Calling-Station-Id} NAS-Identifier %{NAS-Identifier} id %{Acct-Session-Id})"
+
+    Access-Accept = "%S - [%{Reply:Packet-Src-IP-Address} => %{Packet-Src-IP-Address}] Access-Accept: [%{escape:%{User-Name}}] (called %{Called-Station-Id} cli %{Calling-Station-Id} NAS-Identifier %{NAS-Identifier} id %{Acct-Session-Id})"
+
+    Unknown = ""
+
+  }
+
+}
+
+# vim: filetype=config

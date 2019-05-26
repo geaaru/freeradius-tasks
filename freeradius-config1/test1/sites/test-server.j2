@@ -24,6 +24,8 @@ server test_server {
       &Event-Timestamp-Ms := "%T"
     }
 
+    log_auth
+
     chap
 
     {% if mysql_router_nodes|length > 1 %}
@@ -55,6 +57,7 @@ server test_server {
   }
 
   preacct {
+    log_accounting
   }
 
   accounting {
@@ -87,19 +90,18 @@ server test_server {
 
   post-auth {
 
-    Post-Auth-Type REJECT {
-      if (&Reply:Packet-Type == Access-Reject) {
+    log_auth_resp
 
-        {% if mysql_router_nodes|length > 1 %}
-          redundant-load-balance {
-            {% for node in mysql_router_nodes %}
-              sql{{ loop.index }}
-            {% endfor %}
-          }
-        {% else %}
-          sql1
-        {% endif %}
-      }
+    Post-Auth-Type REJECT {
+      {% if mysql_router_nodes|length > 1 %}
+        redundant-load-balance {
+          {% for node in mysql_router_nodes %}
+            sql{{ loop.index }}
+          {% endfor %}
+        }
+      {% else %}
+        sql1
+      {% endif %}
     }
 
   }
