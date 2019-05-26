@@ -5,13 +5,13 @@
 Supply a simple way to build and test a FreeRadius Environment through LXD technology
 and through LXD images available from an LXD Simplestream Protocol Server (over HTTP).
 
+LXD images are built with [Mottainai CD/CI](https://mottainaici.github.io/docs/) and
+through [simplestreams-builder](https://github.com/MottainaiCI/simplestreams-builder) tool.
+
 The LXD environment used require that all nodes MUST be reachable and that their name
 can be resolved by DNS. In the same manner, the node that executes playbooks could
 resolve their DNS. This is possible with a local configuration of `dnsmasq` server
 with customization that domain used is resolved with the DNS server of the LXD network.
-
-LXD images are built with [Mottainai CD/CI](https://mottainaici.github.io/docs/) and
-through [simplestreams-builder](https://github.com/MottainaiCI/simplestreams-builder) tool.
 
 Example:
 
@@ -32,6 +32,9 @@ MySQL Cluster is built with native authentication enable for permit connection f
 old MySQL clients.
 
 ## Technologies
+
+For image preparation use [Mottainai](https://mottainaici.github.io/docs/) and details
+are available [here](https://github.com/geaaru/freeradius-tasks/tree/master/mottainai/images).
 
 For automation is used [Ansible](https://www.ansible.com/) and the detail are available
 [here](https://github.com/geaaru/freeradius-tasks/tree/master/ansible).
