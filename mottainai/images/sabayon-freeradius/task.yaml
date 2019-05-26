@@ -5,8 +5,14 @@
 
 script:
   - source /etc/profile
-  # temporary: Sleep for LXD
-  - sleep 4
+  # Temporary fix
+  - eval "rm -fv /etc/resolv.conf || true"
+  - eval "ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf || true"
+  # temporary: Sleep for systemd-networkd bootstrap
+  - sleep 1
+  - systemctl start systemd-resolved
+  - cat /etc/resolv.conf
+  - equo repo mirrorsort sabayonlinux.org
   - equo up
   - equo install enman
   - enman add https://dispatcher.sabayon.org/sbi/namespace/geaaru/geaaru
@@ -23,7 +29,7 @@ script:
   - find .
   - eval 'rm images/build_*.log || true'
 #type: docker
-#image: sabayon/base-amd64
+#image: sabayon/builder-amd64
 image: sabayon/builder
 type: lxd
 name: "Build LXD sabayon/freeradius image"
@@ -32,10 +38,8 @@ environment:
   - "SSBUILDER_PREFIX=../lxd-sabayon-freeradius"
 namespace: lxd-sabayon-freeradius
 tag_namespace: lxd-sabayon-freeradius
-artefact_path: images
-privkey: ""
+artefact_path: imagesa
+privkey: "mygithubkey"
 source: git@github.com:geaaru/freeradius-tasks.git
 directory: /mottainai/images
 timeout: 0
-#planned: "0 0 1 * * *"
-
