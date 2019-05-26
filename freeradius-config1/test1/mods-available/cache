@@ -1,0 +1,39 @@
+#
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+
+# Cache for store authentication data
+cache cache_auth {
+  # driver = "rlm_cache_rbtree"
+  driver = "rlm_cache_memcached"
+
+  memcached {
+    options = "--SERVER=localhost"
+    pool {
+      start = ${thread[pool].start_servers}
+      min = ${thread[pool].min_spare_servers}
+      max = ${thread[pool].max_servers}
+      spare = ${thread[pool].max_spare_servers}
+      uses = 0
+      lifetime = 0
+      idle_timeout = 60
+    }
+  }
+
+  key = "%{Calling-Station-Id}-%{NAS-Identifier}-auth"
+
+  #  The TTL of cache entries, in seconds.
+  #  This value should be between 10 and 86400.
+  ttl = 120
+
+  add_stats = no
+
+  update {
+    &control:Cleartext-Password := &Control:Cleartext-Password
+    &control:Framed-IP-Netmask := &control:Framed-IP-Network
+    &control:Framed-Protocol := &control:Framed-Protocol
+    &control:Pool-Name := &control:Pool-Name
+  }
+
+}
+
+# vim: filetype=config

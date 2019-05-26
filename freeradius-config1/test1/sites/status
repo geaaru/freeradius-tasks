@@ -1,0 +1,37 @@
+# Telecom Italia APNS Shared Jasper Backend
+# Author: Daniele Rondina, daniele.rondina@guest.telecomitalia.it
+# $Id$
+# Description: A virtual server to handle ONLY Status-Server packets.
+
+server status {
+  listen {
+    #  ONLY Status-Server is allowed to this port.
+    #  ALL other packets are ignored.
+    type = status
+
+    # ipaddr = 127.0.0.1
+    ipaddr = *
+    port = 18121
+
+  }
+
+  client admin {
+    ipaddr = 127.0.0.1
+    secret = adminsecret
+  }
+
+  # Add Here client enabled for Status-Server Request
+
+#
+#  Simple authorize section.  The "Autz-Type Status-Server"
+#  section will work here, too.  See "raddb/sites-available/default".
+  authorize {
+    ok
+
+    # respond to the Status-Server request.
+    Autz-Type Status-Server {
+      ok
+    }
+  }
+}
+
