@@ -8,6 +8,16 @@
 
   tasks:
 
+
+    - name: Stop Terminal Nodes
+      shell: lxc stop {{ lxd_target_server }}:{{ terminal_container }}
+      loop_control:
+        loop_var: terminal_container
+      with_items:
+        - "{{ pam_radiusd_nodes }}"
+      tags:
+        - terminal-nodes
+
     - name: Stop FreeRadius Nodes
       shell: lxc stop {{ lxd_target_server }}:{{ freeradius_container }}
       loop_control:
@@ -22,7 +32,7 @@
       loop_control:
         loop_var: container
       with_items:
-        - "{{ mysql_router_notes }}"
+        - "{{ mysql_router_nodes }}"
         - "{{ mysql_nodes }}"
       tags:
         - mysql-nodes

@@ -74,7 +74,7 @@
     wait_for_ipv4_addresses: true
     timeout: 600
   with_items:
-    - "{{ mysql_router_notes }}"
+    - "{{ mysql_router_nodes }}"
   tags:
     - create_mysql_router_container
 
@@ -83,7 +83,7 @@
     name: mysql
     tasks_from: configure_router
   with_items:
-    - "{{ mysql_router_notes }}"
+    - "{{ mysql_router_nodes }}"
   loop_control:
     loop_var: container
   tags:

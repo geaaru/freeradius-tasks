@@ -47,3 +47,11 @@
           tags:
             - build_terminal_nodes
 
+        # Start Freeradius services. We use domain on client
+        # and without nodes I can't start service.
+        - name: Start FreeRadius service
+          shell: lxc exec {{ container }} -- systemctl start freeradius
+          loop_control:
+            loop_var: container
+          with_items:
+            - "{{ freeradius_nodes }}"

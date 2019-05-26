@@ -36,10 +36,12 @@
   with_items:
     - "{{ freeradius_nodes }}"
 
-      #- name: Delete LXD FreeRadius Container
-      # connection: local
-      #  lxd_container:
-      # name: "{{ item }}"
-      #state: stopped
-      #with_items:
-      #- "{{ freeradius_nodes }}"
+- name: Configure Freeradius Service
+  include_role:
+    name: freeradius
+    tasks_from: configure-radiusd
+  loop_control:
+    loop_var: container
+  with_items:
+    - "{{ freeradius_nodes }}"
+

@@ -28,6 +28,9 @@
 - name: "{{ container }}: Create test user"
   shell: lxc exec {{ container }} -- useradd -m -s /bin/bash -g users test
 
+- name: "{{ container }}: Create geaaru user"
+  shell: lxc exec {{ container }} -- useradd -m -s /bin/bash -g users geaaru
+
 - name: "{{ container }}: Push file system-auth"
   shell: lxc file push {{ staging_dir }}/{{ container }}/system-auth {{ container }}/etc/pam.d/system-auth
 

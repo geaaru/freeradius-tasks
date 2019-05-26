@@ -1,0 +1,60 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Configure Freeradius Nodes
+
+
+- name: "{{ container }}: Create systemd override directory"
+  shell: lxc exec {{ container }} -- mkdir -p /etc/systemd/system/freeradius.service.d
+
+- name: "{{ container }}: Create staging directory if doesn't exist"
+  file:
+    path: "{{ staging_dir }}/{{ container }}"
+    state: directory
+    mode: '0755'
+
+- name: "{{ container }}: Create nas file"
+  template:
+    src: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/nas.tpl"
+    dest: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/nas"
+
+- name: "{{ container }}: Create sql file"
+  template:
+    src: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/mods-available/sql.tpl"
+    dest: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/mods-available/sql"
+
+- name: "{{ container }}: Create test-server file"
+  template:
+    src: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/test-server.j2"
+    dest: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/test-server"
+
+- name: "{{ container }}: Prepare systemd override file"
+  template:
+    src: override-systemd.conf
+    dest: "{{ staging_dir }}/{{ container }}/override.conf"
+
+- name: "{{ container }}: Push file override.conf"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/override.conf {{ container }}/etc/systemd/system/freeradius.service.d/override.conf
+
+- name: "{{ container }}: Push raddb files"
+  shell: lxc file push -p -r {{ freeradius_config_dir }}/{{ freeradius_instance_name }} {{ container }}/etc/raddb/
+
+- name: "{{ container }}: Push instance file"
+  shell: lxc file push {{ freeradius_config_dir }}/{{ freeradius_instance_name }}.conf {{ container }}/etc/raddb/{{ freeradius_instance_name }}.conf
+
+- name: "{{ container }}: Check if exists already dictionary.{{ freeradius_instance_name }} on dictionary"
+  shell: lxc exec {{ container }} -- sh -c "cat /etc/raddb/dictionary | grep 'dictionary.{{ freeradius_instance_name }}' | wc -l"
+  register: check_dictionary
+
+- name: "{{ container }}: Add $INCLUDE to dictionary.{{ freeradius_instance_name }}"
+  shell: lxc exec {{ container }} -- sh -c "echo '\$INCLUDE {{ freeradius_instance_name }}/dictionary.{{ freeradius_instance_name }}' >> /etc/raddb/dictionary"
+  when: check_dictionary.stdout == "0"
+
+- name: "{{ container }}: Fix radiusd files permssions"
+  shell: lxc exec {{ container }} -- chown -R radius:radius /etc/raddb
+
+- name: "{{ container }}: Reload systemd"
+  shell: lxc exec {{ container }} -- systemctl daemon-reload
+
+#- name: "{{ container }}: Start Freeradius Service"
+#  shell: lxc exec {{ container }} -- systemctl start freeradius

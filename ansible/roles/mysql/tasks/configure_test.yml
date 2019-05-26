@@ -1,0 +1,32 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Create all SQL files to compile with dbrm for initialize
+#              FreeRadius database for test-suites.
+
+- name: "{{ task_prefix }}: Test Database connection"
+  shell: dbrm mariadb test_connection
+  args:
+    chdir: "{{ dbrm_config_dir }}"
+  register: dbrm_test_conn
+
+- name: "{{ task_prefix }}: Result test connection"
+  debug:
+    msg: "dbrm mariadb test_connection:\n{{ dbrm_test_conn.stdout }}"
+
+- name: "{{ task_prefix }}: Prepare Tables rows for terminals"
+  template:
+    src: "{{ dbrm_config_dir }}/tests/terminals_data.tpl"
+    dest: "{{ dbrm_config_dir }}/tests/terminals_data.sql"
+
+- name: "{{ task_prefix }}: Compile terminals_data.sql"
+  shell: dbrm mariadb compile --file tests/terminals_data.sql
+  args:
+    chdir: "{{ dbrm_config_dir }}"
+  register: dbrm_compile_terminals_data
+
+- name: "{{ task_prefix }}: Result compile terminals_data.sql"
+  debug:
+    msg: "dbrm mariadb compile:\n{{ dbrm_compile_terminal_nas }}"
+
+
