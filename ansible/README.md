@@ -129,7 +129,7 @@ $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook build.yml --skip-tags initiali
 ```bash
 $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook prepare_test.yml
 $# # Run tests
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook execute_test.yml
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook execute_test.yml -i /tmp/freeradius-tasks/inventory -f 2
 ```
 
 ## Destroy Environment
