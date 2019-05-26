@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS `radacct` (
     nasipaddress         VARCHAR(15) NOT NULL DEFAULT '',
     nasportid            VARCHAR(15),
     nasporttype          VARCHAR(32),
-    acctstarttime        DATETIME,
-    acctupdatetime       DATETIME,
-    acctstoptime         DATETIME,
+    acctstarttime        DATETIME(3),
+    acctupdatetime       DATETIME(3),
+    acctstoptime         DATETIME(3),
     acctinterval         INT(12),
     acctsessiontime      INT(12) UNSIGNED,
     acctauthentic        VARCHAR(32),
@@ -91,6 +91,8 @@ CREATE TABLE IF NOT EXISTS `radpostauth` (
     username            VARCHAR(64) NOT NULL DEFAULT '',
     pass                VARCHAR(64) NOT NULL DEFAULT '',
     reply               VARCHAR(32) NOT NULL DEFAULT '',
+    callingstationid    VARCHAR(200) NOT NULL,
+    nasidentifier       VARCHAR(300) DEFAULT NULL,
     authdate            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
