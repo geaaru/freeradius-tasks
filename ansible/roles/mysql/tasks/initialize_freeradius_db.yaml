@@ -3,6 +3,11 @@
 # Author: Daniele Rondina, geaaru@sabayonlinux.org
 # Description: Configure mysqld daemon at first bootstrap
 
+- name: "Freeradius: Create DBRM profile config"
+  template:
+    src: "{{ dbrm_config_dir }}/dbrm-profiles/dev.conf.j2"
+    dest: "{{ dbrm_config_dir }}/dbrm-profiles/dev.conf"
+
 - name: "Freeradius: Test Database connection"
   shell: dbrm mariadb test_connection
   args:
