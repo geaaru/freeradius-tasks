@@ -27,7 +27,7 @@ products:
     directory: sabayon-freeradius
     # Path where retrieve images informations and files.
     # This option is used by build-images-file
-    prefix_path: "https://mottainai/sbi/namespaces/lxd-sabayon-freeradius"
+    prefix_path: "https://mottainai/sbi/namespace/lxd-sabayon-freeradius"
     #prefix_path: "https://dispatcher.sabayon.org/sbi/namespace/lxd-sabayon-freeradius"
     days: 1
     aliases:
@@ -43,7 +43,7 @@ products:
     directory: mysql-server
     # Path where retrieve images informations and files.
     # This option is used by build-images-file
-    prefix_path: "https://mottainai/sbi/namespaces/lxd-mysql-server"
+    prefix_path: "https://mottainai/sbi/namespace/lxd-mysql-server"
     # Add hook for separate image creation and clean .distrobuilder directory (issue on distrobuilder).
     #build_script_hook: "/oracle-image-fix.sh"
     # prefix_path: "https://dispatcher.sabayon.org/sbi/namespace/lxd-mysql-server"
