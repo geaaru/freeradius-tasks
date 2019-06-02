@@ -115,21 +115,21 @@ $# lxc list
 For build Environment:
 
 ```bash
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook build.yml
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook playbooks/build.yml
 ```
 
 or for to exclude MySQL Cluster build and Terminal Nodes:
 
 ```bash
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook build.yml --skip-tags initialize_freeradius_db,build_mysql_nodes,build_terminal_nodes
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook playbooks/build.yml --skip-tags initialize_freeradius_db,build_mysql_nodes,build_terminal_nodes
 ```
 
 ## Initialize FreeRadius database with tests data and execute test suites
 
 ```bash
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook prepare_test.yml
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook playbooks/prepare_test.yml
 $# # Run tests
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook execute_test.yml -i /tmp/freeradius-tasks/inventory -f 2
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook playbooks/execute_test.yml -i /tmp/freeradius-tasks/inventory -f 2
 ```
 
 ## Destroy Environment
@@ -137,18 +137,18 @@ $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook execute_test.yml -i /tmp/freer
 For destroy environment.
 
 ```bash
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook stop.yml
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook playbooks/stop.yml
 ```
 
 ## Reload Freeradius Configuration
 
 Resync configuration to every nodes:
 ```bash
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook reload-radius-config.yml
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook playbooks/reload-radius-config.yml
 ```
 
 Resync configuration to every nodes and restart Freeradius service:
 
 ```bash
-$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook reload-radius-config.yml -e freeradius_restart=1
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook playbooks/reload-radius-config.yml -e freeradius_restart=1
 ```

@@ -36,6 +36,7 @@ mysql_nodes:
 # Define list of nodes of the MySQL Router
 mysql_router_nodes:
   - mrouter1
+  - mrouter2
 
 # Define list of LXD profiles to use for
 # create MySQL/MySQL Router Container nodes.
@@ -47,7 +48,8 @@ mysql_lxd_profiles:
 # LXD network used by the cluster.
 lxd_network_domain: geaaru.local
 # Define server where find needed images
-lxd_image_server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
+#lxd_image_server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
+lxd_image_server: https://dispatcher.sabayon.org/sbi/namespace/lxd-freeradius-images
 # Define name of the image used for FreeRadius Container
 freeradius_lxd_image: sabayon/freeradius
 # Define name of the image used for MySQL Server/Router Container
