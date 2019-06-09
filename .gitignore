@@ -2,5 +2,7 @@
 *.log
 freeradius-config1/test1/sites/nas
 freeradius-config1/test1/mods-available/sql
-freeradius-config1/test1/sites/test-server
+freeradius-config1/test1/sites/terminal-server
+freeradius-config1/test1/sites/ap-server
+freeradius-config1/test1/mods-config/files/authorize
 dbrm/tests/terminals_data.sql
