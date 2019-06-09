@@ -1,0 +1,12 @@
+#
+# Author: Daniele Rondina, geaaur@sabayonlinux.org
+# Project: Test Server
+
+{% for client in ap_clients %}
+{{ client.user }}   Cleartext-Password := "{{ client.pwd }}", Calling-Station-Id := \"{{ client.mac | replace(":", "-") }}\"
+                    Reply-Message := "Hello, %{User-Name}"
+
+
+{% endfor %}
+
+# vim: filetype=config

@@ -2,21 +2,7 @@
 # Author: Daniele Rondina, geaaru@sabayonlinux.org
 #
 
-listen {
-  type = auth
-  ipaddr = *
-  port = 0
-  clients = all_nas
-}
-
-listen {
-  type = acct
-  ipaddr = *
-  port = 0
-  clients = all_nas
-}
-
-server test_server {
+server ap_server {
 
   authorize {
     update control {
@@ -26,17 +12,14 @@ server test_server {
 
     log_auth
 
-    chap
+    eap {
+      ok = return
+      updated = return
+    }
 
-    {% if mysql_router_nodes|length > 1 %}
-      redundant-load-balance {
-        {% for node in mysql_router_nodes %}
-          sql{{ loop.index }}
-        {% endfor %}
-      }
-    {% else %}
-      sql1
-    {% endif %}
+    files
+
+    chap
 
     if (!&Control:Auth-Type) {
       pap
@@ -54,6 +37,10 @@ server test_server {
       chap
     }
 
+    Auth-Type EAP {
+      eap
+    }
+
   }
 
   preacct {
@@ -67,9 +54,9 @@ server test_server {
 
     {% if mysql_router_nodes|length > 1 %}
       redundant-load-balance {
-        {% for node in mysql_router_nodes %}
+    {% for node in mysql_router_nodes %}
           sql{{ loop.index }}
-        {% endfor %}
+    {% endfor %}
       }
     {% else %}
       sql1
@@ -89,15 +76,29 @@ server test_server {
   }
 
   post-auth {
+    if (session-state:User-Name && reply:User-Name && request:User-Name && (reply:User-Name == request:User-Name)) {
+      update reply {
+      &User-Name !* ANY
+      }
+    }
+    update {
+      &reply: += &session-state:
+    }
 
     log_auth_resp
 
     Post-Auth-Type REJECT {
+
+      # Insert EAP-Failure message if the request was
+      # rejected by policy instead of because of an
+      # authentication failure
+      eap
+
       {% if mysql_router_nodes|length > 1 %}
         redundant-load-balance {
-          {% for node in mysql_router_nodes %}
+      {% for node in mysql_router_nodes %}
             sql{{ loop.index }}
-          {% endfor %}
+      {% endfor %}
         }
       {% else %}
         sql1

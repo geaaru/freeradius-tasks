@@ -7,20 +7,16 @@
 clients all_nas {
 
 {% for node in freeradius_clients %}
-  client {{ node.split('.') | first }}_client {
-    ipaddr = {{ node }}
+  client {{ node.node.split('.') | first }}_client {
+{% if node.ipaddr | default(false) %}
+    ipaddr = {{ node.ipaddr }}
+{% else %}
+    ipaddr = {{ node.node }}
+{% endif %}
     secret = "{{ freeradius_secret }}"
-    virtual_server = test_server
+    virtual_server = "{{ node.virtual_server }}"
   }
-
 {% endfor %}
-
-# Temporary
-  client mytest {
-    ipaddr = 192.168.21.1
-    secret = "qwe123"
-    virtual_server = test_server
-  }
 
 }
 

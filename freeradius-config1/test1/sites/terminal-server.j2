@@ -1,0 +1,111 @@
+#
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+#
+
+listen {
+  type = auth
+  ipaddr = *
+  port = 0
+  clients = all_nas
+}
+
+listen {
+  type = acct
+  ipaddr = *
+  port = 0
+  clients = all_nas
+}
+
+server terminal_server {
+
+  authorize {
+    update control {
+      # Datetime with microsec is used
+      &Event-Timestamp-Ms := "%T"
+    }
+
+    log_auth
+
+    chap
+
+    {% if mysql_router_nodes|length > 1 %}
+      redundant-load-balance {
+    {% for node in mysql_router_nodes %}
+          sql{{ loop.index }}
+    {% endfor %}
+      }
+    {% else %}
+      sql1
+    {% endif %}
+
+    if (!&Control:Auth-Type) {
+      pap
+    }
+
+  }
+
+  authenticate {
+
+    Auth-Type PAP {
+      pap
+    }
+
+    Auth-Type CHAP {
+      chap
+    }
+
+  }
+
+  preacct {
+    log_accounting
+  }
+
+  accounting {
+    update control {
+      &Event-Timestamp-Ms := "%T"
+    }
+
+    {% if mysql_router_nodes|length > 1 %}
+      redundant-load-balance {
+        {% for node in mysql_router_nodes %}
+          sql{{ loop.index }}
+        {% endfor %}
+      }
+    {% else %}
+      sql1
+    {% endif %}
+
+    ok
+  }
+  # end accounting
+
+  session {
+  }
+
+  pre-proxy {
+  }
+
+  post-proxy {
+  }
+
+  post-auth {
+
+    log_auth_resp
+
+    Post-Auth-Type REJECT {
+      {% if mysql_router_nodes|length > 1 %}
+        redundant-load-balance {
+          {% for node in mysql_router_nodes %}
+            sql{{ loop.index }}
+          {% endfor %}
+        }
+      {% else %}
+        sql1
+      {% endif %}
+    }
+
+  }
+
+}
+
+# vim: filetype=config ts=2 sw=2 expandtab
