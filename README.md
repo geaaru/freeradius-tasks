@@ -42,3 +42,6 @@ For automation is used [Ansible](https://www.ansible.com/) and the detail are av
 For database initialization and for simplify management of the database upgrade it'is used
 [dbrm](https://github.com/geaaru/database-release-manager).
 
+## Use Cases
+
+ * [Example1](https://github.com/geaaru/freeradius-tasks/tree/master/freeradius-config1)
