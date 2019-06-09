@@ -8,6 +8,14 @@
 
   tasks:
 
+    - name: Stop AP Simulator Nodes
+      shell: lxc stop {{ lxd_target_server }}:{{ ap_sim_container }}
+      loop_control:
+        loop_var: ap_sim_container
+      with_items:
+        - "{{ ap_simulator_nodes }}"
+      tags:
+        - ap-simulator-nodes
 
     - name: Stop Terminal Nodes
       shell: lxc stop {{ lxd_target_server }}:{{ terminal_container }}

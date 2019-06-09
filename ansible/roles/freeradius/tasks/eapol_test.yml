@@ -1,0 +1,30 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Execute eapol_test tests.
+
+- name: "{{ container }}: Create staging directory if doesn't exist"
+  file:
+    path: "{{ staging_dir }}/{{ container }}"
+    state: directory
+    mode: '0755'
+
+- name: "{{ container }}: Prepare eapol_test config template"
+  template:
+    src: eapol-ttls-eapmd5.conf
+    dest: "{{ staging_dir }}/{{ container }}/eapol-ttls-eapmd5.conf"
+
+- name: "{{ container }}: Push eapol_test config"
+  shell: lxc file push {{ staging_dir }}/{{ container }}/eapol-ttls-eapmd5.conf {{ container }}/tmp/eapol-ttls-eapmd5.conf
+
+- name: "{{ container }}: Execute client test"
+  include_role:
+    name: freeradius
+    tasks_from: eapol_test_client
+  loop_control:
+    loop_var: client
+  with_items:
+    - "{{ ap_clients }}"
+  when: ap_clients is defined
+
+

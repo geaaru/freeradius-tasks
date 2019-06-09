@@ -1,0 +1,20 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Execute eapol_test for single client
+
+- name: "{{ container }}: Prepare test for client {{ client.mac }}"
+  shell: lxc exec {{ container }} -- sh -c "sed -e 's:IDENTITY:{{ client.user }}:g' -e 's:PASSWORD:{{ client.pwd }}:g' /tmp/eapol-ttls-eapmd5.conf > /tmp/run.conf"
+
+- name: "{{ container }}: Retrieve IPv4 of Radius Node"
+  shell: lxc exec {{ container }} -- sh -c "ping -c 1 {{ freeradius_nodes | random }}.{{ lxd_network_domain }} -4" | head -n1 | awk 'match($0, /[0-9]+.[0-9]+.[0-9]+.[0-9]+/) { print substr($0, RSTART, RLENGTH)}'
+  register: target_radius
+
+- name: "{{ container }}: Execute test for client {{ client.mac }}"
+  shell: lxc exec {{ container }} -- eapol_test -c /tmp/run.conf -s {{ freeradius_secret }} -a {{ target_radius.stdout }} -M{{ client.mac }}
+  register: eapol_test
+
+- name: "{{ container }}: Output test for client {{ client.mac }}"
+  debug:
+    msg: "Client {{ client.mac }}\n{{ eapol_test.stdout }}"
+

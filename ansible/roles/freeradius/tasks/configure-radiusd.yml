@@ -13,20 +13,15 @@
     state: directory
     mode: '0755'
 
-- name: "{{ container }}: Create nas file"
+- name: "{{ container }}: Process FreeRadius Config templates"
   template:
-    src: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/nas.tpl"
-    dest: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/nas"
-
-- name: "{{ container }}: Create sql file"
-  template:
-    src: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/mods-available/sql.tpl"
-    dest: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/mods-available/sql"
-
-- name: "{{ container }}: Create test-server file"
-  template:
-    src: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/test-server.j2"
-    dest: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/sites/test-server"
+    src: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/{{ tpl.source }}"
+    dest: "{{ freeradius_config_dir }}/{{ freeradius_instance_name }}/{{ tpl.dst }}"
+  loop_control:
+    loop_var: tpl
+  with_items:
+    - "{{ freeradius_config_templates }}"
+  when: freeradius_config_templates is defined
 
 - name: "{{ container }}: Prepare systemd override file"
   template:
@@ -60,3 +55,15 @@
   shell: lxc exec {{ container }} -- systemctl restart freeradius
   when: freeradius_restart is defined
 
+- name: "{{ container }}: Check if local certs directory exists"
+  stat:
+    path: "{{ freeradius_config_dir }}/certs"
+  register: certs_dir
+
+- name: "{{ container }}: Copy certs files"
+  shell: lxc file push {{ freeradius_config_dir }}/certs/{server,ca,index,dh}* {{ container }}/etc/raddb/certs/
+  when: certs_dir.stat.isdir is defined and certs_dir.stat.isdir
+
+- name: "{{ container }}: Fix certs files permissions"
+  shell: lxc exec {{ container }} -- sh -c "chown radius:radius -R /etc/raddb/certs && chmod 0600 /etc/raddb/certs/*"
+  when: certs_dir.stat.isdir is defined and certs_dir.stat.isdir

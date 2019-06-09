@@ -16,7 +16,18 @@ freeradius_nodes:
 
 # Freeradius client of Radius Server
 freeradius_clients:
-  - terminal-radius1.geaaru.local
+  - node: terminal-radius1.geaaru.local
+    virtual_server: "terminal_server"
+  - node: ap-simulator1.geaaru.local
+    virtual_server: "ap_server"
+  # temporary node for local test
+  #- node: mytest
+  #  ipaddr: "192.168.21.1"
+  #  virtual_server: "terminal_server"
+  # My AP :)
+  #- node: bananapir1
+  #  ipaddr: "192.168.0.200"
+  #  virtual_server: "ap_server"
 
 # Freeradius client secret
 freeradius_secret: "mysecret"
@@ -26,6 +37,18 @@ pam_radiusd_nodes:
   - terminal-radius1
 pam_radiusd_opts: debug try_first_pass
 pam_radiusd_timeout: 6
+
+# Define node to use for test AP access
+ap_simulator_nodes:
+  - ap-simulator1
+# Define list of clients of AP
+ap_clients:
+  - mac: "01:02:03:04:05:06"
+    user: "user1"
+    pwd: "pwduser1"
+  - mac: "01:02:03:04:05:07"
+    user: "user2"
+    pwd: "pwduser2"
 
 # Define list of nodes of the MySQL Cluster and their name
 mysql_nodes:
@@ -79,6 +102,18 @@ freeradius_config_dir: ../freeradius-config1
 freeradius_opts: -Xx
 # Freeradius name instance
 freeradius_instance_name: test1
+freeradius_config_templates:
+  - source: sites/nas.tpl
+    dst: sites/nas
+  - source: mods-available/sql.tpl
+    dst: mods-available/sql
+  - source: sites/terminal-server.j2
+    dst: sites/terminal-server
+  - source: mods-config/files/authorize.j2
+    dst: mods-config/files/authorize
+  - source: sites/ap-server.j2
+    dst: sites/ap-server
+
 # Database configuration directory
 dbrm_config_dir: ../dbrm
 # dbrm_path: /usr/bin/dbrm

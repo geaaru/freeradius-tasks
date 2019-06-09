@@ -20,3 +20,10 @@
         loop_var: container
       with_items:
         - "{{ freeradius_nodes }}"
+
+    - name: Restart FreeRadius service
+      shell: lxc exec {{ container }} -- systemctl restart freeradius
+      loop_control:
+        loop_var: container
+      with_items:
+        - "{{ freeradius_nodes }}"

@@ -1,0 +1,19 @@
+---
+
+# Author: Daniele Rondina, geaaru@sabayonlinux.org
+# Description: Playbook for initialize and execute test suites.
+
+- hosts:
+  - localhost
+
+  tasks:
+
+    # Execute autentication test from every AP module
+    - name: Execute eapol_test from every AP node
+      include_role:
+        name: freeradius
+        tasks_from: eapol_test
+      loop_control:
+        loop_var: container
+      with_items:
+        - "{{ ap_simulator_nodes }}"

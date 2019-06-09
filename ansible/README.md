@@ -31,11 +31,14 @@ Hereinafter the list of configuration options:
 | ephemeral_container | yes | If use ephemeral container or not |
 | freeradius_lxd_profiles | - | Supply the list of LXD profiles to use for FreeRadius nodes |
 | freeradius_nodes | - | List of nodes Freeradius that we want create on Environment. From 1 to N. |
-| freeradius_clients | - | List of NAS Client to configure on FreeRadius nodes. |
+| freeradius_clients | - | List of NAS Client to configure on FreeRadius nodes and what virtual_server is used. |
 | freeradius_secret | - | Radius secret to use. Now it's supported only one secret for all clients. |
+| freeradius_config_templates | - | List of templates to process and related with the scenario to test. |
 | pam_radiusd_nodes | - | List of nodes to configure with `pam_radiusd` for test terminal access with Radius AAA |
 | pam_radiusd_opts | debug try_first_pass | Options to define on Pam configuration files. |
 | pam_radiusd_timeout | 6 | Radius timeout to configure for Pam authentication |
+| ap_simulator_nodes | - | List of nodes to use for test AP authentication |
+| ap_clients | - | List of authorized clients (MAC, user, password) |
 | mysql_nodes | - | List of MySQL InnoDB Server to create. From 1 to N. |
 | mysql_router_nodes | - | List of MySQL Router nodes to create. From 1 to N. |
 | mysql_lxd_profiles | - | List of LXD profiles used for MySQL and MySQL Router nodes. |
@@ -87,6 +90,21 @@ freeradius_nodes:
   - radius2
 ```
 
+Configure FreeRadius Clients/NAS:
+
+```yaml
+# Freeradius client of Radius Server
+freeradius_clients:
+  - node: terminal-radius1.geaaru.local
+    virtual_server: "terminal_server"
+  - node: ap-simulator1.geaaru.local
+    virtual_server: "ap_server"
+  # An external node with Hostapd
+  - node: bananapir1
+    ipaddr: "192.168.0.200"
+    virtual_server: "ap_server"
+```
+
 From LXD what you see after *build.yml* playbook:
 
 ```bash
@@ -130,6 +148,8 @@ $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook build.yml --skip-tags initiali
 $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook prepare_test.yml
 $# # Run tests
 $# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook execute_test.yml -i /tmp/freeradius-tasks/inventory -f 2
+$# # Execute eapol_test tests
+$# ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook execute_eapol_tests.yml
 ```
 
 ## Destroy Environment

@@ -47,6 +47,14 @@
           tags:
             - build_terminal_nodes
 
+        # Create AP simulator container
+        - name: Create AP Simulator Container
+          include_role:
+            name: lxd
+            tasks_from: image_ap_simulator
+          tags:
+            - build_ap_simulator_nodes
+
         # Start Freeradius services. We use domain on client
         # and without nodes I can't start service.
         - name: Start FreeRadius service
