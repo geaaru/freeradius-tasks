@@ -8,24 +8,14 @@
   debug:
     msg: "Terminal test nodes: {{ pam_radiusd_nodes }} with profiles {{ freeradius_lxd_profiles }}"
 
-# Create container
-- name: Create a LXD Terminal test Container
-  connection: "{{ lxd_target_server }}"
-  lxd_container:
-    name: "{{ item }}"
-    state: started
-    cert_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.crt"
-    key_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.key"
-    source:
-      type: image
-      mode: pull
-      server: "{{ lxd_image_server }}"
-      protocol: simplestreams # if you get a 404, try setting protocol: simplestreams
-      alias: "{{ freeradius_lxd_image }}"
-    ephemeral: True
+- name: "Create a LXD Terminal test Container"
+  vars:
     profiles: "{{ freeradius_lxd_profiles | list }}"
-    wait_for_ipv4_addresses: true
-    timeout: 600
+    lxd_image: "{{ freeradius_lxd_image }}"
+    node_name: "{{ item }}"
+  include_role:
+    name: lxd
+    tasks_from: create_container
   with_items:
     - "{{ pam_radiusd_nodes }}"
   tags:

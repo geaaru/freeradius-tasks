@@ -1,0 +1,56 @@
+---
+
+# Author: Daniele Rondina, daniele.rondina@gmail.com
+# Description: Create LXD container
+
+- name: "Prepare list of profiles params"
+  set_fact:
+    profile_params: "{% for p in profiles %}-p {{ p }} {% endfor %}"
+    image_copy_opts: "{{ image_copy_opts | default('--copy-aliases --auto-update') }}"
+    ephemeral_opt: "{% if ephemeral_container | default(true) %}-e{% endif %}"
+
+- name: "Fetching image from remote server..."
+  shell: lxc image copy "{{ lxd_image_server }}:{{ lxd_image }}" "{{ lxd_target_server }}:" {{ image_copy_opts }}
+
+- name: "Creating container..."
+  shell: lxc init "{{ lxd_image_server }}:{{ lxd_image }}" "{{ lxd_target_server }}:{{ node_name }}" {{ profile_params }} {{ ephemeral_opt }}
+
+- name: "Retrieve container init config..."
+  shell: lxc config show "{{ lxd_target_server }}:{{ node_name }}"
+  register: container_info
+
+- name: "Parse configuration..."
+  set_fact:
+    node_config: "{{ container_info.stdout | from_yaml | to_json | from_json }}"
+
+- name: "Set raw.lxc option"
+  set_fact:
+    raw_lxc:
+      lxc.net.0.ipv4.address: "{{ ipv4_address }}"
+      lxc.net.0.ipv4.gateway: "{{ ipv4_gateway }}"
+  when: ipv4_static_address is defined and ipv4_gateway is defined
+
+- name: "Parsed configuration..."
+  debug:
+    msg: "{{ node_name }} config:\n{{ node_config.config }}"
+
+- name: "Create staging directory if doesn't exist"
+  file:
+    path: "{{ staging_dir }}/{{ node_name }}"
+    state: directory
+    mode: '0755'
+
+- name: "Prepare container configuration file"
+  template:
+    src: lxd-config.j2
+    dest: "{{ staging_dir }}/{{ node_name }}/config.yaml"
+
+- name: "Parse configuration..."
+  debug:
+    msg: "{{ node_name }} config:\n{{ node_config }}"
+
+- name: "Update container configuration"
+  shell: cat "{{ staging_dir }}/{{ node_name }}/config.yaml" | lxc config edit "{{ lxd_target_server }}:{{ node_name }}"
+
+- name: "Start container"
+  shell: lxc start "{{ lxd_target_server }}:{{ node_name }}"

@@ -1,0 +1,34 @@
+{% if node_config.architecture is defined %}
+architecture: {{ node_config.architecture }}
+{% endif %}
+
+config:
+{% for c in node_config.config %}
+{% if c == "volatile.idmap.next" %}
+  {{ c }}: '{{ node_config.config[c] }}'
+{% else %}
+  {{ c }}: "{{ node_config.config[c] }}"
+{% endif %}
+{% endfor %}
+{% if raw_lxc is defined %}
+  raw.lxc: |
+{% for r in raw_lxc %}
+    {{ r }} = {{ raw_lxc[r] }}
+{% endfor %}
+{% endif %}
+
+ephemeral: {% if node_config.ephemeral %}true{% else %}false{% endif %}
+
+{% if ( node_config.devices | length ) > 0 %}
+devices:
+{% for d in node_config.devices %}
+  {{ d | to_yaml }}
+{% endfor %}
+{% else %}
+devices: {}
+{% endif %}
+profiles:
+{% for p in profiles %}
+- {{ p }}
+{% endfor %}
+description: "{{ node_config.description | default('{}') }}"

@@ -70,9 +70,8 @@ mysql_lxd_profiles:
 # Define the network domain configured on
 # LXD network used by the cluster.
 lxd_network_domain: geaaru.local
-# Define server where find needed images
-#lxd_image_server: https://ironlight2.geaaru.ddns.net/sbi/namespaces/lxd-freeradius-images
-lxd_image_server: https://dispatcher.sabayon.org/sbi/namespace/lxd-freeradius-images
+# Define server name where find needed images (visible by lxc remote list)
+lxd_image_server: "freeradius-dso"
 # Define name of the image used for FreeRadius Container
 freeradius_lxd_image: sabayon/freeradius
 # Define name of the image used for MySQL Server/Router Container

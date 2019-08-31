@@ -7,23 +7,14 @@
   debug:
     msg: "Nodes to build: {{ mysql_nodes }} with profiles {{ mysql_lxd_profiles }}"
 
-- name: Create a LXD MySQL Container
-  connection: "{{ lxd_target_server }}"
-  lxd_container:
-    name: "{{ item }}"
-    state: started
-    cert_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.crt"
-    key_file: "{{ lookup('env', 'HOME') }}/.config/lxc/client.key"
-    source:
-      type: image
-      mode: pull
-      server: "{{ lxd_image_server }}"
-      protocol: simplestreams # if you get a 404, try setting protocol: simplestreams
-      alias: "{{ mysql_server_lxd_image }}"
-    ephemeral: True
+- name: "Create a LXD MySQL Container"
+  vars:
     profiles: "{{ mysql_lxd_profiles | list }}"
-    wait_for_ipv4_addresses: true
-    timeout: 600
+    lxd_image: "{{ mysql_server_lxd_image }}"
+    node_name: "{{ item }}"
+  include_role:
+    name: lxd
+    tasks_from: create_container
   with_items:
     - "{{ mysql_nodes }}"
   tags:
@@ -58,21 +49,14 @@
   tags:
     - create_mysql_database
 
-- name: Create LXD MySQL Router Container
-  connection: "{{ lxd_target_server }}"
-  lxd_container:
-    name: "{{ item }}"
-    state: started
-    source:
-      type: image
-      mode: pull
-      server: "{{ lxd_image_server }}"
-      protocol: simplestreams
-      alias: "{{ mysql_server_lxd_image }}"
-    ephemeral: True
+- name: "Create LXD MySQL Router Container"
+  vars:
     profiles: "{{ mysql_lxd_profiles | list }}"
-    wait_for_ipv4_addresses: true
-    timeout: 600
+    lxd_image: "{{ mysql_server_lxd_image }}"
+    node_name: "{{ item }}"
+  include_role:
+    name: lxd
+    tasks_from: create_container
   with_items:
     - "{{ mysql_router_nodes }}"
   tags:
